@@ -3,16 +3,15 @@ package com.elvis.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -42,16 +41,6 @@ public class PhantomjsDemo {
 					.findElement(By.tagName("input"));
 
 			scrollScreen(trEle, action, jse);
-			// for (int j = 1; j < 10; j++) {
-			// String script = "scroll(0," + j * 50 + ")";
-			// jse.executeScript(script);
-			// action.moveToElement(trEle);
-			// action.click().perform();
-			// if (trEle.isSelected()) {
-			// break;
-			// }
-			// }
-			// System.out.println("某行选中情况: " + trEle.isSelected());
 
 			WebElement detailIcon = driver.findElement(By.xpath("//input[@id='tracing_by_booking_f:hl27:hl53']")); // Details按钮
 			System.out.println("details按钮");
@@ -60,6 +49,7 @@ public class PhantomjsDemo {
 			// jse.executeScript("scroll(0,450)");
 			wait.until(
 					ExpectedConditions.presenceOfElementLocated(By.xpath("//label[@id='tracing_by_booking_f:hl13']")));
+
 			System.out.println("url：" + driver.getCurrentUrl());
 
 			array1.add(i, driver.getCurrentUrl());
@@ -88,13 +78,17 @@ public class PhantomjsDemo {
 		System.out.println("某行选中情况: " + element.isSelected());
 	}
 
-	private static void parseResult(WebDriver driver){
-		List<WebElement> tr=driver.findElement(By.xpath("//tbody[@class='hal-table-body']")).findElements(By.tagName("tr"));
-	    for (int i = 0; i < tr.size(); i++) {
-			String td=tr.get(i).getText();
-			System.out.println("数据:"+td);
-			
-			
+	private static void parseResult(WebDriver driver) {
+
+		List<WebElement> tr = driver.findElement(By.xpath("//tbody[@class='hal-table-body']"))
+				.findElements(By.tagName("tr"));
+		for (int i = 0; i < tr.size(); i++) {
+			List<WebElement> td = tr.get(i).findElements(By.tagName("td"));
+			for (int j = 0; j < td.size(); j++) {
+				String value = td.get(j).findElement(By.tagName("span")).getText();
+				System.out.print(value + " ** ");
+			}
+			System.out.println();
 		}
 	}
 
