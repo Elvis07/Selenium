@@ -7,17 +7,17 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class PhantomjsDemo {
+public class ChromeSelenium {
 	public static void main(String[] args) throws Exception {
 
 		String url = "https://www.hapag-lloyd.com/en/online-business/tracing/tracing-by-booking.html?booking=96818585";
-		System.setProperty("phantomjs.binary.path", "E:\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
-		WebDriver driver = new PhantomJSDriver();
+		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 300);
 
 		Actions action = new Actions(driver);
@@ -27,38 +27,38 @@ public class PhantomjsDemo {
 
 		for (int i = 0; i < 10; i++) {
 			driver.manage().window().maximize();
-			Thread.sleep(getRandom());
+			// Thread.sleep(getRandom());
 			driver.get(url);
 
 			wait.until(ExpectedConditions.presenceOfElementLocated(By.id("startpagebookmark")));
-			System.out.println("--------首页响应完毕--------");
+			System.out.println("--------棣栭〉鍝嶅簲瀹屾瘯--------");
 
 			WebElement trEle = driver.findElement(By.className("hal-table-body"))
 					.findElements(By.className("hal-table-row")).get(i).findElements(By.tagName("td")).get(0)
 					.findElement(By.tagName("input"));
 
 			scrollScreen(trEle, action, jse);
-			Thread.sleep(getRandom());
-			WebElement detailIcon = driver.findElement(By.xpath("//input[@id='tracing_by_booking_f:hl27:hl53']")); // Details按钮
-			System.out.println("details按钮");
+			// Thread.sleep(getRandom());
+			WebElement detailIcon = driver.findElement(By.xpath("//input[@id='tracing_by_booking_f:hl27:hl53']")); // Details鎸夐挳
+			System.out.println("details鎸夐挳");
 			action.moveToElement(detailIcon);
 			action.click().perform();
 			// jse.executeScript("scroll(0,450)");
 			wait.until(
 					ExpectedConditions.presenceOfElementLocated(By.xpath("//label[@id='tracing_by_booking_f:hl13']")));
 
-			System.out.println("url：" + driver.getCurrentUrl());
+			System.out.println("url " + i + ": " + driver.getCurrentUrl());
 
 			array1.add(i, driver.getCurrentUrl());
 
 			// parseResult(driver);
 		}
-		driver.quit();
+		driver.close();
 
 		for (int i = 0; i < array1.size(); i++) {
 			System.out.println(array1.get(i));
 		}
-		System.out.println("长度" + array1.size());
+		System.out.println("闀垮害" + array1.size());
 	}
 
 	private static void scrollScreen(WebElement element, Actions action, JavascriptExecutor jse) {
@@ -73,7 +73,7 @@ public class PhantomjsDemo {
 				break;
 			}
 		}
-		System.out.println("某行选中情况: " + element.isSelected());
+		System.out.println("鏌愯閫変腑鎯呭喌: " + element.isSelected());
 	}
 
 	private static void parseResult(WebDriver driver) {
