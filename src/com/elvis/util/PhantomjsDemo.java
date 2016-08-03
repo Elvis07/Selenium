@@ -2,14 +2,11 @@ package com.elvis.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -27,50 +24,61 @@ public class PhantomjsDemo {
 		String url = "https://www.hapag-lloyd.com/en/online-business/tracing/tracing-by-booking.html?booking=96818585";
 		System.setProperty("phantomjs.binary.path", "E:\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe");
 		WebDriver driver = new PhantomJSDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 300);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 
 		Actions action = new Actions(driver);
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 
 		ArrayList<String> array1 = new ArrayList<String>();
+		while (true) {
+			for (int i = 0; i < 10; i++) {
+				driver.manage().window().maximize();
+				// Thread.sleep(getRandom());
+				driver.get(url);
+				
+				try {
+					wait.until(ExpectedConditions
+							.presenceOfElementLocated(By.id("startpagebookmark")));
+				} catch (Exception e) {
+					snapshot((TakesScreenshot) driver);
+					System.out.println("异常url: " + (i + 1) + driver.getCurrentUrl());
+				}
+				// Thread.sleep(getRandom());
+				System.out.println("--------首页响应完毕--------");
+				WebElement trEle = driver.findElement(By.className("hal-table-body"))
+						.findElements(By.className("hal-table-row")).get(i).findElements(By.tagName("td")).get(0)
+						.findElement(By.tagName("input"));
+				scrollScreen(trEle, action, jse);
 
-		for (int i = 0; i < 10; i++) {
-			driver.manage().window().maximize();
-			// Thread.sleep(getRandom());
-			driver.get(url);
-			wait.until(ExpectedConditions.presenceOfElementLocated(By.id("startpagebookmark")));
+				WebElement detailIcon = driver.findElement(By.xpath("//input[@id='tracing_by_booking_f:hl27:hl53']")); // Details按钮
+				System.out.println("details按钮");
+				// Thread.sleep(getRandom());
+				action.moveToElement(detailIcon);
+				action.click().perform();
+				snapshot((TakesScreenshot) driver);
+				try {
+					wait.until(ExpectedConditions
+							.presenceOfElementLocated(By.xpath("//label[@id='tracing_by_booking_f:hl13']")));
+				} catch (Exception e) {
+					snapshot((TakesScreenshot) driver);
+					System.out.println("异常url：" + (i + 1) + driver.getCurrentUrl());
+				}
 
-			System.out.println("--------首页响应完毕--------");
-			WebElement trEle = driver.findElement(By.className("hal-table-body"))
-					.findElements(By.className("hal-table-row")).get(i).findElements(By.tagName("td")).get(0)
-					.findElement(By.tagName("input"));
-			scrollScreen(trEle, action, jse);
-			// Thread.sleep(getRandom());
-			WebElement detailIcon = driver.findElement(By.xpath("//input[@id='tracing_by_booking_f:hl27:hl53']")); // Details按钮
-			System.out.println("details按钮");
+				// Thread.sleep(getRandom());
+				snapshot((TakesScreenshot) driver);
+				System.out.println("url: " + (i + 1) + driver.getCurrentUrl());
 
-			action.moveToElement(detailIcon);
-			action.click().perform();
-			snapshot((TakesScreenshot) driver);
-			// jse.executeScript("scroll(0,450)");
-			Document doc = Jsoup.parse(driver.getPageSource());
+				array1.add(i, driver.getCurrentUrl());
 
-			wait.until(
-					ExpectedConditions.presenceOfElementLocated(By.xpath("//label[@id='tracing_by_booking_f:hl13']")));
-			snapshot((TakesScreenshot) driver);
-			System.out.println("url: " + (i + 1) + driver.getCurrentUrl());
-
-			array1.add(i, driver.getCurrentUrl());
-
-			// parseResult(driver);
+				// parseResult(driver);
+			}
 		}
-
-		driver.quit();
-
-		for (int i = 0; i < array1.size(); i++) {
-			System.out.println(array1.get(i));
-		}
-		System.out.println("长度" + array1.size());
+		// driver.quit();
+		//
+		// for (int i = 0; i < array1.size(); i++) {
+		// System.out.println(array1.get(i));
+		// }
+		// System.out.println("长度" + array1.size());
 	}
 
 	private static void scrollScreen(WebElement element, Actions action, JavascriptExecutor jse) {
@@ -88,50 +96,42 @@ public class PhantomjsDemo {
 		System.out.println("某行选中情况: " + element.isSelected());
 	}
 
-	private static void parseResult(WebDriver driver) {
+	// private static void parseResult(WebDriver driver) {
+	//
+	// List<WebElement> tr =
+	// driver.findElement(By.xpath("//tbody[@class='hal-table-body']"))
+	// .findElements(By.tagName("tr"));
+	// for (int i = 0; i < tr.size(); i++) {
+	// List<WebElement> td = tr.get(i).findElements(By.tagName("td"));
+	// for (int j = 0; j < td.size(); j++) {
+	// String value = td.get(j).findElement(By.tagName("span")).getText();
+	// System.out.print(value + "\t");
+	// }
+	// System.out.println();
+	// }
+	// }
 
-		List<WebElement> tr = driver.findElement(By.xpath("//tbody[@class='hal-table-body']"))
-				.findElements(By.tagName("tr"));
-		for (int i = 0; i < tr.size(); i++) {
-			List<WebElement> td = tr.get(i).findElements(By.tagName("td"));
-			for (int j = 0; j < td.size(); j++) {
-				String value = td.get(j).findElement(By.tagName("span")).getText();
-				System.out.print(value + "\t");
-			}
-			System.out.println();
-		}
-	}
+	private static int getRandom() {
 
-	private static int getRandom1() {
-		int Max = 10 * 1000, Min = 5 * 1000;
-
-		int a = (int) Math.round(Math.random() * (Max - Min) + Min);
-
-		return a;
+		int Max = 10 * 1000, Min = 3 * 1000;
+		int random = (int) Math.round(Math.random() * (Max - Min) + Min);
+		return random;
 	}
 
 	public static void snapshot(TakesScreenshot drivername) {
-		// this method will take screen shot ,require two parameters ,one is
-		// driver name, another is file name
 		Date date = new Date();
-		DateFormat df3 = DateFormat.getTimeInstance();// 只显示出时分秒
+		SimpleDateFormat df3 = new SimpleDateFormat("HH-mm-ss");
 		String filename = df3.format(date) + ".png";
 		// String currentPath = System.getProperty("user.dir"); // get current
-		// work
-		// folder
 		// System.out.println(currentPath);
 		File scrFile = drivername.getScreenshotAs(OutputType.FILE);
-		// Now you can do whatever you need to do with it, for example copy
-		// somewhere
 		try {
 			System.out.println("save snapshot name is:" + filename);
 			FileUtils.copyFile(scrFile, new File("E:\\snap" + "\\" + filename));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Can't save screenshot");
 			e.printStackTrace();
 		} finally {
-
 			System.out.println("screen shot finished");
 		}
 	}
